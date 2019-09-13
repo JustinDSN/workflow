@@ -26,11 +26,14 @@ import com.squareup.workflow.Worker
 import com.squareup.workflow.Workflow
 import com.squareup.workflow.WorkflowAction
 import com.squareup.workflow.applyTo
+import com.squareup.workflow.debugging.LazyString
+import com.squareup.workflow.debugging.WorkflowHierarchyDebugSnapshot
 import com.squareup.workflow.internal.Behavior
 import com.squareup.workflow.internal.Behavior.WorkerCase
 import com.squareup.workflow.internal.Behavior.WorkflowOutputCase
 import com.squareup.workflow.internal.RealRenderContext
 import com.squareup.workflow.internal.RealRenderContext.Renderer
+import com.squareup.workflow.internal.RenderingEnvelope
 import com.squareup.workflow.internal.WorkflowId
 
 /**
@@ -299,14 +302,20 @@ private class TestOnlyRenderContext<S, O : Any> : RenderContext<S, O>, Renderer<
     child: Workflow<ChildPropsT, ChildOutputT, ChildRenderingT>,
     id: WorkflowId<ChildPropsT, ChildOutputT, ChildRenderingT>,
     props: ChildPropsT
-  ): ChildRenderingT {
+  ): RenderingEnvelope<ChildRenderingT> {
     @Suppress("UNCHECKED_CAST")
     val childStatefulWorkflow =
       child.asStatefulWorkflow() as StatefulWorkflow<ChildPropsT, Any?, ChildOutputT, ChildRenderingT>
     val childInitialState = childStatefulWorkflow.initialState(props, null)
     // Allow the workflow-under-test to *render* children, but those children must not try to
     // use the RenderContext themselves.
-    return childStatefulWorkflow.render(props, childInitialState, NoopRenderContext)
+    val rendering = childStatefulWorkflow.render(props, childInitialState, NoopRenderContext)
+    val debugSnapshot = WorkflowHierarchyDebugSnapshot(
+        workflowType = id.toString(),
+        stateDescription = LazyString(childInitialState::toString),
+        children = emptyList()
+    )
+    return RenderingEnvelope(rendering, debugSnapshot)
   }
 
   fun buildBehavior(): Behavior<S, O> = realContext.buildBehavior()

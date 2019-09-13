@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.workflow
-
-import com.squareup.workflow.debugging.WorkflowHierarchyDebugSnapshot
-import kotlinx.coroutines.flow.Flow
+package com.squareup.workflow.debugging
 
 /**
- * A tuple of [Flow]s representing all the emissions from the workflow runtime.
- *
- * Passed to the function taken by [launchWorkflowIn].
+ *  TODO write documentation
  */
-class WorkflowSession<out OutputT : Any, out RenderingT>(
-  val renderingsAndSnapshots: Flow<RenderingAndSnapshot<RenderingT>>,
-  val outputs: Flow<OutputT>,
-  val debugSnapshots: Flow<WorkflowHierarchyDebugSnapshot>
-)
+data class WorkflowHierarchyDebugSnapshot(
+  val workflowType: String,
+  val stateDescription: LazyString,
+  val children: List<Child>
+) {
+
+  /**
+   *  TODO write documentation
+   */
+  data class Child(
+    val key: String,
+    val snapshot: WorkflowHierarchyDebugSnapshot
+  )
+}

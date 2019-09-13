@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.workflow
+package com.squareup.workflow.debugging
 
-import com.squareup.workflow.debugging.WorkflowHierarchyDebugSnapshot
-import kotlinx.coroutines.flow.Flow
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
- * A tuple of [Flow]s representing all the emissions from the workflow runtime.
- *
- * Passed to the function taken by [launchWorkflowIn].
+ * Wrapper around a string provided lazily by a function that implements equals/hashcode/toString
+ * using the lazy string.
  */
-class WorkflowSession<out OutputT : Any, out RenderingT>(
-  val renderingsAndSnapshots: Flow<RenderingAndSnapshot<RenderingT>>,
-  val outputs: Flow<OutputT>,
-  val debugSnapshots: Flow<WorkflowHierarchyDebugSnapshot>
-)
+class LazyString(provider: () -> String) {
+  private val value by lazy(PUBLICATION, provider)
+
+  override fun toString(): String = value
+  override fun equals(other: Any?): Boolean = other is LazyString && other.value == value
+  override fun hashCode(): Int = value.hashCode()
+}

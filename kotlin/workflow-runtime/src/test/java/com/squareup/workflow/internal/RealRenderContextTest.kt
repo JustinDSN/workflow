@@ -58,7 +58,7 @@ class RealRenderContextTest {
       child: Workflow<IC, OC, RC>,
       id: WorkflowId<IC, OC, RC>,
       props: IC
-    ): RC {
+    ): RenderingEnvelope<RC> {
       return Rendering(case, child, id, props) as RC
     }
   }

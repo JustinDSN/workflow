@@ -20,6 +20,8 @@ import com.squareup.workflow.StatefulWorkflow
 import com.squareup.workflow.Workflow
 import com.squareup.workflow.WorkflowAction
 import com.squareup.workflow.applyTo
+import com.squareup.workflow.debugging.LazyString
+import com.squareup.workflow.debugging.WorkflowHierarchyDebugSnapshot
 import com.squareup.workflow.internal.Behavior.WorkerCase
 import com.squareup.workflow.parse
 import com.squareup.workflow.readByteStringWithLength
@@ -90,7 +92,7 @@ internal class WorkflowNode<PropsT, StateT, OutputT : Any, RenderingT>(
   fun render(
     workflow: StatefulWorkflow<PropsT, *, OutputT, RenderingT>,
     input: PropsT
-  ): RenderingT =
+  ): RenderingEnvelope<RenderingT> =
     renderWithStateType(workflow as StatefulWorkflow<PropsT, StateT, OutputT, RenderingT>, input)
 
   /**
@@ -176,7 +178,7 @@ internal class WorkflowNode<PropsT, StateT, OutputT : Any, RenderingT>(
   private fun renderWithStateType(
     workflow: StatefulWorkflow<PropsT, StateT, OutputT, RenderingT>,
     input: PropsT
-  ): RenderingT {
+  ): RenderingEnvelope<RenderingT> {
     updatePropsAndState(workflow, input)
 
     val context = RealRenderContext(subtreeManager)
@@ -189,7 +191,13 @@ internal class WorkflowNode<PropsT, StateT, OutputT : Any, RenderingT>(
           workerTracker.track(workerCases)
         }
 
-    return rendering
+    val debugSnapshot = WorkflowHierarchyDebugSnapshot(
+        workflowType = id.type.toString(),
+        stateDescription = LazyString(state::toString),
+        children = behavior!!.childDebugSnapshots
+    )
+
+    return RenderingEnvelope(rendering, debugSnapshot)
   }
 
   private fun updatePropsAndState(

@@ -19,6 +19,7 @@ import com.squareup.workflow.RenderingAndSnapshot
 import com.squareup.workflow.Snapshot
 import com.squareup.workflow.StatefulWorkflow
 import com.squareup.workflow.Workflow
+import com.squareup.workflow.debugging.WorkflowHierarchyDebugSnapshot
 import com.squareup.workflow.launchWorkflowImpl
 import com.squareup.workflow.stateless
 import kotlinx.coroutines.CancellationException
@@ -522,7 +523,8 @@ private fun simpleLoop(
     initialSnapshot: Snapshot?,
     initialState: StateT?,
     onRendering: suspend (RenderingAndSnapshot<RenderingT>) -> Unit,
-    onOutput: suspend (OutputT) -> Unit
+    onOutput: suspend (OutputT) -> Unit,
+    onDebugSnapshot: suspend (WorkflowHierarchyDebugSnapshot) -> Unit
   ): Nothing {
     block(
         onRendering as suspend (RenderingAndSnapshot<Any?>) -> Unit,
@@ -539,7 +541,8 @@ private object HangingLoop : WorkflowLoop {
     initialSnapshot: Snapshot?,
     initialState: StateT?,
     onRendering: suspend (RenderingAndSnapshot<RenderingT>) -> Unit,
-    onOutput: suspend (OutputT) -> Unit
+    onOutput: suspend (OutputT) -> Unit,
+    onDebugSnapshot: suspend (WorkflowHierarchyDebugSnapshot) -> Unit
   ): Nothing = hang()
 }
 
