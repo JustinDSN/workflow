@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.workflow
+package com.squareup.workflow.internal
 
-import com.squareup.workflow.debugging.WorkflowDebugInfo
-import kotlinx.coroutines.flow.Flow
+import com.squareup.workflow.debugging.WorkflowUpdateDebugInfo
 
 /**
- * A tuple of [Flow]s representing all the emissions from the workflow runtime.
- *
- * Passed to the function taken by [launchWorkflowIn].
+ * TODO write documentation
  */
-class WorkflowSession<out OutputT : Any, out RenderingT>(
-  val renderingsAndSnapshots: Flow<RenderingAndSnapshot<RenderingT>>,
-  val outputs: Flow<OutputT>,
-  val debugSnapshots: Flow<WorkflowDebugInfo>
+internal class OutputEnvelope<out O : Any>(
+  val output: O?,
+  val debugInfo: WorkflowUpdateDebugInfo
 )
