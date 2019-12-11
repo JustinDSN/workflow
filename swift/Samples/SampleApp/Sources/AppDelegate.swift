@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import UIKit
-import WorkflowUI
+import WorkflowUI2
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,13 +26,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        var viewRegistry = ViewRegistry()
-        viewRegistry.registerDemoScreen()
-        viewRegistry.registerWelcomeScreen()
-        viewRegistry.registerCrossFadeContainer()
-        window?.rootViewController = ContainerViewController(
-            workflow: RootWorkflow(),
-            viewRegistry: viewRegistry)
+//        var viewRegistry = ViewRegistry()
+//        viewRegistry.registerDemoScreen()
+//        viewRegistry.registerWelcomeScreen()
+//        viewRegistry.registerCrossFadeContainer()
+//        window?.rootViewController = ContainerViewController(
+//            workflow: RootWorkflow(),
+//            viewRegistry: viewRegistry)
+
+        window?.rootViewController = ContainerViewController(workflow: MyWorkflow())
 
         window?.makeKeyAndVisible()
         
