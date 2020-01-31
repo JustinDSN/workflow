@@ -26,6 +26,7 @@ extension ViewRegistry {
 
 
 final class SplitScreenContainerViewController: ScreenViewController<SplitScreenContainerScreen> {
+    var axis: NSLayoutConstraint.Axis
 
     var leftContentViewController: ScreenViewController<AnyScreen>? = nil
     var leftContainerView: UIView
@@ -36,6 +37,8 @@ final class SplitScreenContainerViewController: ScreenViewController<SplitScreen
     var rightContainerView: UIView
 
     required init(screen: SplitScreenContainerScreen, viewRegistry: ViewRegistry) {
+        self.axis = screen.axis
+
         self.leftContainerView = UIView()
         self.leftContainerView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -113,22 +116,46 @@ final class SplitScreenContainerViewController: ScreenViewController<SplitScreen
             rightContainerView.addSubview(rightContentViewController.view)
         }
 
-        NSLayoutConstraint.activate([
-            leftContainerView.topAnchor.constraint(equalTo: view.topAnchor),
-            leftContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            leftContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            leftContainerView.rightAnchor.constraint(equalTo: separatorView.leftAnchor),
-            leftContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: screen.ratio.value),
+        activateConstraints(axis)
+    }
 
-            separatorView.topAnchor.constraint(equalTo: view.topAnchor),
-            separatorView.widthAnchor.constraint(equalToConstant: 1.0),
-            separatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+    private func activateConstraints(_ axis: NSLayoutConstraint.Axis) {
+        switch axis {
+        case .horizontal:
+            NSLayoutConstraint.activate([
+                leftContainerView.topAnchor.constraint(equalTo: view.topAnchor),
+                leftContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                leftContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                leftContainerView.rightAnchor.constraint(equalTo: separatorView.leftAnchor),
+                leftContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: screen.ratio.value),
 
-            rightContainerView.topAnchor.constraint(equalTo: view.topAnchor),
-            rightContainerView.leftAnchor.constraint(equalTo: separatorView.rightAnchor),
-            rightContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            rightContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
-        ])
+                separatorView.topAnchor.constraint(equalTo: view.topAnchor),
+                separatorView.widthAnchor.constraint(equalToConstant: 1.0),
+                separatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+                rightContainerView.topAnchor.constraint(equalTo: view.topAnchor),
+                rightContainerView.leftAnchor.constraint(equalTo: separatorView.rightAnchor),
+                rightContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                rightContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            ])
+        case .vertical:
+            NSLayoutConstraint.activate([
+                leftContainerView.topAnchor.constraint(equalTo: view.topAnchor),
+                leftContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                leftContainerView.bottomAnchor.constraint(equalTo: separatorView.topAnchor),
+                leftContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
+                leftContainerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: screen.ratio.value),
+
+                separatorView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                separatorView.heightAnchor.constraint(equalToConstant: 1.0),
+                separatorView.rightAnchor.constraint(equalTo: view.rightAnchor),
+
+                rightContainerView.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
+                rightContainerView.leftAnchor.constraint(equalTo: view.leftAnchor),
+                rightContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                rightContainerView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            ])
+        }
     }
 
     override func viewDidLayoutSubviews() {
