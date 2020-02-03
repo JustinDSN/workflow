@@ -39,7 +39,7 @@ public struct SplitScreenContainerScreen: Screen {
         rightScreen: RightScreenType,
         ratio: Ratio = .third,
         separatorColor: UIColor = .black,
-        axis: NSLayoutConstraint.Axis = .vertical
+        axis: NSLayoutConstraint.Axis = .horizontal
     ) {
         self.leftScreen = AnyScreen(leftScreen)
         self.rightScreen = AnyScreen(rightScreen)

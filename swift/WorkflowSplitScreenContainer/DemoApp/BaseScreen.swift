@@ -20,6 +20,7 @@ import WorkflowUI
 struct BaseScreen: Screen {
     var title: String
     var backgroundColor: UIColor
+    var viewTapped: () -> Void
 }
 
 
@@ -35,10 +36,13 @@ extension ViewRegistry {
 fileprivate final class BaseScreenViewController: ScreenViewController<BaseScreen> {
     
     private let titleLabel: UILabel
+    private let tapGestureRecognizer: UITapGestureRecognizer
     
     required init(screen: BaseScreen, viewRegistry: ViewRegistry) {
         titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 20))
         titleLabel.textAlignment = .center
+        
+        tapGestureRecognizer = UITapGestureRecognizer()
         
         super.init(screen: screen, viewRegistry: viewRegistry)
         
@@ -48,7 +52,10 @@ fileprivate final class BaseScreenViewController: ScreenViewController<BaseScree
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tapGestureRecognizer.addTarget(self, action: #selector(viewTapped))
+        
         view.addSubview(titleLabel)
+        view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewDidLayoutSubviews() {
@@ -64,6 +71,11 @@ fileprivate final class BaseScreenViewController: ScreenViewController<BaseScree
     private func update(with screen: BaseScreen) {
         view.backgroundColor = screen.backgroundColor
         titleLabel.text = screen.title
+    }
+    
+    @objc
+    private func viewTapped() {
+        screen.viewTapped()
     }
 }
 
